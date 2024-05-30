@@ -19,7 +19,6 @@ class Menu extends Component{
                 <Link to={"/registration"}><button name={"REGISTRATION"}>REGISTRATION</button></Link>
             </ul>
         </div>
-
             </>);
     }
 }

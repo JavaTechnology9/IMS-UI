@@ -32,6 +32,7 @@ class Layout extends Component{
                     <Route path={"/menu"} element={<HeaderWithMenu/>}/>
                     <Route path={"/userLogs"} element={<HeaderWithMenu/>}/>
                     <Route path={"/home"} element={<Home/>}/>
+                    <Route path={"/login"} element={<Login/>}/>
                 </Routes>
             </div>
         </BrowserRouter>);

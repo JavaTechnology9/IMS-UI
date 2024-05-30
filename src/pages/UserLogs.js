@@ -6,6 +6,7 @@ class UserLogs extends Component{
     render() {
         return(<>
             <HeaderWithMenu/>
+            <div id={"product-container"}>
             <div><h1>User Logs</h1></div>
             <div className="table-container">
                 <table className="styled-table">
@@ -23,19 +24,26 @@ class UserLogs extends Component{
                         <td>John Doe</td>
                         <td>30</td>
                         <td>123 Main St</td>
+                        <td>123 Main St</td>
+                        <td>123 Main St</td>
                     </tr>
                     <tr>
                         <td>Jane Smith</td>
                         <td>25</td>
                         <td>456 Elm St</td>
+                        <td>25</td>
+                        <td>Jane Smith</td>
                     </tr>
                     <tr>
                         <td>Emily Johnson</td>
                         <td>35</td>
                         <td>789 Oak St</td>
+                        <td>35</td>
+                        <td>Emily Johnson</td>
                     </tr>
                     </tbody>
                 </table>
+            </div>
             </div>
         </>)
     }

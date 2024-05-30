@@ -1,12 +1,12 @@
 .table-container {
-    margin: 20px;
+    margin: 5px;
     overflow-x: auto;
-    padding-left: 250px;
+    padding-left: 50px;
 }
 
 .styled-table {
     border-collapse: collapse;
-    margin: 25px 0;
+    margin: 5px 0;
     font-size: 1em;
     font-family: Arial, sans-serif;
     min-width: 400px;
