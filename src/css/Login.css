@@ -40,9 +40,9 @@ input[type=text], input[type=password] {
     box-sizing: border-box;
 }select{
     /*margin-left: 30px;*/
-     width: 85%;
+     width: 100%;
      text-align: left;
-     padding: 10px 10px;
+     padding: 10px 8px;
      margin: 10px 0;
      display: inline-block;
      border: 2px solid #ccc;
@@ -63,8 +63,8 @@ input[type=text], input[type=password] {
  }
  button{
      /*width: 5%;*/
-     padding: 10px 15px;
-     margin: 10px 15px;
+     padding: 10px 10px;
+     margin: 8px 8px;
      display: inline-block;
      border: 1px solid #ccc;
      border-radius: 4px;

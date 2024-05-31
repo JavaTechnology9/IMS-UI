@@ -1,14 +1,81 @@
 import React, {Component} from "react";
 import HeaderWithMenu from "./HeaderWithMenu";
-//import {Link} from "react-router-dom";
 import "../css/product.css"
+import axios from "axios";
 
 class Products extends Component {
+    constructor(props){
+        super(props);
+        this.state={
+            productName:'',
+            quantity:'',
+            costPrice:'',
+            sellingPrice:'',
+            productBrand:'',
+            message:'',
+            products:[],
+        }
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChange(event) {
+        const { name, value } = event.target;
+        console.log(name);
+        console.log(value);
+        this.setState({
+            [name]: value,
+        });
+    }
+    async componentDidMount(){
+        const response = await axios.get('http://localhost:8080/products/getAllProducts');
+        console.log(response.data);
+        this.setState(()=>({
+            products:response.data
+        }))
+    }
+    async handleSubmit(event) {
+        event.preventDefault();
+        const { productName, quantity,costPrice,sellingPrice, productBrand} = this.state;
+        const productData = { productName, quantity,costPrice,sellingPrice, productBrand};
+        try {
+            console.log(productData);
+            const response = await axios.post('http://localhost:8080/products/addProduct',productData);
+            // if (response.status === 200) {
+            //     this.setState({ message: response.data });
+            // }
+            if (response.status===200) {
+                alert(response.data);
+                
+                //this.props.navigate('/login');
+            }
+        }catch (error){
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                const { status,data } = error.response;
+                if (status === 401) {
+                    this.setState({ message: data });
+                } else if (status === 400) {
+                    this.setState({ message: data });
+                }  else if (status === 500) {
+                    this.setState({ message: data });
+                }else {
+                    this.setState({ message: 'An error occurred' });
+                }
+            } else if (error.request) {
+                // The request was made but no response was received
+                this.setState({ message: 'No response from server' });
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                this.setState({ message: 'Error: ' + error.message });
+            }
+        }
+
+    }
     render() {
         return (<>
             <HeaderWithMenu/>
             <div id={"product-container"}>
-                <div><h1>User Logs</h1></div>
+                <div><h1>Product Details</h1></div>
                 <div className="table-container">
                     <table className="styled-table">
                         <thead>
@@ -18,59 +85,52 @@ class Products extends Component {
                             <th>COST_PRICE</th>
                             <th>SELL_PRICE</th>
                             <th>BRAND</th>
+                            <th>QUANTITY</th>
                         </tr>
+                        
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>John Doe</td>
-                            <td>30</td>
-                            <td>123 Main St</td>
-                            <td>45.63</td>
-                            <td>Apple</td>
-                        </tr>
-                        <tr>
-                            <td>Jane Smith</td>
-                            <td>25</td>
-                            <td>456 Elm St</td>
-                            <td>45.63</td>
-                            <td>Apple</td>
-                        </tr>
-                        <tr>
-                            <td>Emily Johnson</td>
-                            <td>35</td>
-                            <td>789 Oak St</td>
-                            <td>45.63</td>
-                            <td>Apple</td>
-                        </tr>
+                        {this.state.products.map(product => (
+                            <tr key={product.id}>
+                                <td>{product.productCode}</td>
+                                <td>{product.productName}</td>
+                                <td>{product.costPrice}</td>
+                                <td>{product.sellingPrice}</td>
+                                <td>{product.productBrand}</td>
+                                <td>{product.quantity}</td>
+                            </tr>
+                        ))}
+                        
                         </tbody>
                     </table>
                 </div>
             </div>
             <div id={"add-product-container"}>
                 <div>
+                    <h4>{this.state.message}</h4>
                     <h2> Add Product</h2>
                 </div>
-                <form>
+                <form onSubmit={this.handleSubmit}>
                     <div className={"add-product-input"}>
                     <div className={"add-product-details"}>
                         <label htmlFor={"productName"}> Product Name:</label>
-                            <input type={"text"} name={"productName"} id={"productName"} />
+                            <input type={"text"} name={"productName"} id={"productName"} placeholder="Enter Product Name" onChange={this.handleChange} required />
                     </div>
                     <div className={"add-product-details"}>
                         <label htmlFor={"quantity"}>Quantity: </label>
-                        <input type={"text"} id={"quantity"} className={"quantity"}/>
+                        <input type={"text"} id={"quantity"} name={"quantity"} className={"quantity"} placeholder="Enter Quantity" onChange={this.handleChange} required />
                     </div>
                     <div className={"add-product-details"}>
-                        <label htmlFor={"cost-price"}>Cost Price: </label>
-                        <input type={"text"} id={"cost-price"} className={"cost-price"}/>
+                        <label htmlFor={"costPrice"}>Cost Price: </label>
+                        <input type={"text"} id={"costPrice"} name={"costPrice"} className={"costPrice"} placeholder="Enter Cost Price" onChange={this.handleChange} required />
                     </div>
                     <div className={"add-product-details"}>
-                        <label htmlFor={"selling-price"}>Selling Price: </label>
-                        <input type={"text"} id={"selling-price"} className={"selling-price"}/>
+                        <label htmlFor={"sellingPrice"}>Selling Price: </label>
+                        <input type={"text"} id={"sellingPrice"} name={"sellingPrice"} className={"sellingPrice"} placeholder="Enter Selling Price" onChange={this.handleChange} required />
                     </div>
                     <div className={"add-product-details"}>
-                        <label htmlFor={"product-brand"}>Brand: </label>
-                        <input type={"text"} id={"product-brand"} className={"product-brand"}/>
+                        <label htmlFor={"productBrand"}>Brand: </label>
+                        <input type={"text"} id={"productBrand"}name={"productBrand"}  className={"productBrand"} placeholder="Enter Brand Name" onChange={this.handleChange} required />
                     </div>
 
                     <div id={"add-product-login"}>

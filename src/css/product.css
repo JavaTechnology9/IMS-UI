@@ -5,7 +5,7 @@
     border-radius: 10px;
     margin-top: calc(3% - 5px);
     margin-left: calc(11% - 5px);
-    width: calc(43% - 5px);
+    width: calc(48% - 5px);
     height: calc(100% - 0);
     box-sizing: border-box;
     display: grid;
@@ -14,7 +14,7 @@
     border: 2px solid #7a7777;
     background-color: #cecccc;
     border-radius: 5px;
-    margin-left: calc(68% - 15px);
+    margin-left: calc(62% - 15px);
     margin-top: calc(3% - 5px);
     box-sizing: border-box;
     display: grid;
@@ -40,13 +40,13 @@
 #quantity{
     margin-left: 72px;
 }
-#cost-price{
+#costPrice{
     margin-left: 60px;
 }
-#selling-price{
+#sellingPrice{
     margin-left: 38px;
 }
-#product-brand{
+#productBrand{
     margin-left: 98px;
 }
 
