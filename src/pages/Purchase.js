@@ -1,7 +1,89 @@
 import React, {Component} from "react";
 import HeaderWithMenu from "./HeaderWithMenu";
-
+import axios from "axios";
 class Purchase extends Component{
+    constructor(props){
+        super(props);
+        this.state={
+            supplierName:'',
+            productName:'',
+            quantity:'',
+            costPrice:'',
+            sellingPrice:'',
+            brand:'',
+            message:'',
+            purchaseRecords:[],
+            supplierRecords:[],
+        }
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSelectChange=this.handleSelectChange.bind(this);
+    }
+    handleChange(event) {
+        const { name, value } = event.target;
+        console.log(name);
+        console.log(value);
+        this.setState({
+            [name]: value,
+        });
+    }
+    async componentDidMount(){
+        
+        const purchaseResponse = await axios.get('http://localhost:8080/purchase/loadAllPurchase');
+        console.log(purchaseResponse.data);
+        this.setState(()=>({
+            purchaseRecords:purchaseResponse.data
+        }))
+        const response = await axios.get('http://localhost:8080/supplier/loadSuppliers');
+        console.log(response.data);
+        this.setState(()=>({
+            supplierRecords:response.data
+        }))
+    }
+    handleSelectChange(event){
+        this.setState({
+            supplierName: event.target.value
+        })
+        
+    }
+    async handleSubmit(event) {
+        event.preventDefault();
+        const { supplierName,productName,quantity,costPrice,sellingPrice,brand} = this.state;
+        const purchaseData = { supplierName,productName,quantity,costPrice,sellingPrice,brand};
+        try {
+            console.log(purchaseData);
+            const response = await axios.post('http://localhost:8080/purchase/addPurchase',purchaseData);
+            // if (response.status === 200) {
+            //     this.setState({ message: response.data });
+            // }
+            if (response.status===200) {
+                alert(response.data);
+                
+                //this.props.navigate('/login');
+            }
+        }catch (error){
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                const { status,data } = error.response;
+                if (status === 401) {
+                    this.setState({ message: data });
+                } else if (status === 400) {
+                    this.setState({ message: data });
+                }  else if (status === 500) {
+                    this.setState({ message: data });
+                }else {
+                    this.setState({ message: 'An error occurred' });
+                }
+            } else if (error.request) {
+                // The request was made but no response was received
+                this.setState({ message: 'No response from server' });
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                this.setState({ message: 'Error: ' + error.message });
+            }
+        }
+
+    }
     render() {
         return(<>
             <HeaderWithMenu/>
@@ -19,21 +101,15 @@ class Purchase extends Component{
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>John Doe</td>
-                            <td>30</td>
-                            <td>123 Main St</td>
-                        </tr>
-                        <tr>
-                            <td>Jane Smith</td>
-                            <td>25</td>
-                            <td>456 Elm St</td>
-                        </tr>
-                        <tr>
-                            <td>Emily Johnson</td>
-                            <td>35</td>
-                            <td>789 Oak St</td>
-                        </tr>
+                        {this.state.purchaseRecords && this.state.purchaseRecords.map(purchase=>(
+                            <tr key={purchase.purchaseId}>
+                                <td>{purchase.purchaseId}</td>
+                                <td>{purchase.productCode}</td>
+                                <td>{purchase.productName}</td>
+                                <td>{purchase.quantity}</td>
+                                <td>{purchase.totalCost}</td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
@@ -42,29 +118,43 @@ class Purchase extends Component{
                 <div>
                     <h2> Add Purchase</h2>
                 </div>
-                <form>
+                <form onSubmit={this.handleSubmit}>
                     <div className={"add-product-input"}>
+                    <div className={"add-product-details"}>
+                            <label htmlFor={"product-brand"}>Select Supplier : </label>
+                            <select onChange={this.handleSelectChange}>
+                                <option>Select Supplier</option>
+                           {this.state.supplierRecords.map(supplier => (
+                            <option key={supplier.supplierId} value={supplier.supplierName}>
+                               {supplier.supplierName}
+                                
+                            </option>
+                        ))}
+                            </select>
+                        </div>
                         <div className={"add-product-details"}>
                             <label htmlFor={"productName"}> Product Name:</label>
-                            <input type={"text"} name={"productName"} id={"productName"}/>
+                            <input type={"text"} name={"productName"} id={"productName"} onChange={this.handleChange} required/>
                         </div>
                         <div className={"add-product-details"}>
                             <label htmlFor={"quantity"}>Quantity: </label>
-                            <input type={"text"} id={"quantity"} className={"quantity"}/>
+                            <input type={"text"} id={"quantity"} name={"quantity"} onChange={this.handleChange} required/>
                         </div>
                         <div className={"add-product-details"}>
-                            <label htmlFor={"cost-price"}>Cost Price: </label>
-                            <input type={"text"} id={"cost-price"} className={"cost-price"}/>
-                        </div>
-                        <div className={"add-product-details"}>
-                            <label htmlFor={"selling-price"}>Selling Price: </label>
-                            <input type={"text"} id={"selling-price"} className={"selling-price"}/>
-                        </div>
-                        <div className={"add-product-details"}>
-                            <label htmlFor={"product-brand"}>Brand: </label>
-                            <input type={"text"} id={"product-brand"} className={"product-brand"}/>
+                            <label htmlFor={"costPrice"}>Cost Price: </label>
+                            <input type={"text"} id={"costPrice"} name={"costPrice"} onChange={this.handleChange} required/>
                         </div>
 
+                        <div className={"add-product-details"}>
+                            <label htmlFor={"sellingPrice"}>Selling Price: </label>
+                            <input type={"text"} id={"sellingPrice"} name={"sellingPrice"} onChange={this.handleChange} required/>
+                        </div>
+
+                        <div className={"add-product-details"}>
+                            <label htmlFor={"brand"}>Brand: </label>
+                            <input type={"text"} id={"brand"} name={"brand"} onChange={this.handleChange} required/>
+                        </div>
+                        
                         <div id={"add-product-login"}>
                             <div id={"add-product-login-button"}>
                                 <button name={"add-product"}>Add Purchase</button>

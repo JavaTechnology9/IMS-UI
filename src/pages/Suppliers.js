@@ -1,71 +1,128 @@
 import React, {Component} from "react";
 import HeaderWithMenu from "./HeaderWithMenu";
 import "../css/supplier.css";
+import axios from "axios";
 
 class Suppliers extends Component{
+    constructor(props){
+        super(props);
+        this.state={
+            supplierName:'',
+            mobileNumber:'',
+            address:'',
+            email:'',
+            message:'',
+            supplierRecords:[],
+        }
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChange(event) {
+        const { name, value } = event.target;
+        console.log(name);
+        console.log(value);
+        this.setState({
+            [name]: value,
+        });
+    }
+    async componentDidMount(){
+        const response = await axios.get('http://localhost:8080/supplier/loadSuppliers');
+        console.log(response.data);
+        this.setState(()=>({
+            supplierRecords:response.data
+        }))
+    }
+    async handleSubmit(event) {
+        event.preventDefault();
+        const { supplierName,mobileNumber,address,email} = this.state;
+        const supplierData = { supplierName,mobileNumber,address,email};
+        try {
+            console.log(supplierData);
+            const response = await axios.post('http://localhost:8080/supplier/addSupplier',supplierData);
+            // if (response.status === 200) {
+            //     this.setState({ message: response.data });
+            // }
+            if (response.status===200) {
+                alert(response.data);
+                
+                //this.props.navigate('/login');
+            }
+        }catch (error){
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                const { status,data } = error.response;
+                if (status === 401) {
+                    this.setState({ message: data });
+                } else if (status === 400) {
+                    this.setState({ message: data });
+                }  else if (status === 500) {
+                    this.setState({ message: data });
+                }else {
+                    this.setState({ message: 'An error occurred' });
+                }
+            } else if (error.request) {
+                // The request was made but no response was received
+                this.setState({ message: 'No response from server' });
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                this.setState({ message: 'Error: ' + error.message });
+            }
+        }
+
+    }
     render() {
         return(<>
             <HeaderWithMenu/>
             <div id={"product-container"}>
-                <div><h1>Suppliers</h1></div>
+                <div><h1>Suppliers Details </h1></div>
                 <div className="table-container">
                     <table className="styled-table">
                         <thead>
                         <tr>
-                            <th>PRODUCT_CODE</th>
-                            <th>PRODUCT_NAME</th>
-                            <th>QUANTITY</th>
-                            <th>SELL_PRICE</th>
-                            <th>COST_PRICE</th>
+                            <th>SUPPLIER_CODE</th>
+                            <th>SUPPLIER_NAME</th>
+                            <th>ADDRESS</th>
+                            <th>MOBILE_NUMBER</th>
+                            <th>EMAIL</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>John Doe</td>
-                            <td>30</td>
-                            <td>123 Main St</td>
-                        </tr>
-                        <tr>
-                            <td>Jane Smith</td>
-                            <td>25</td>
-                            <td>456 Elm St</td>
-                        </tr>
-                        <tr>
-                            <td>Emily Johnson</td>
-                            <td>35</td>
-                            <td>789 Oak St</td>
-                        </tr>
+                        {this.state.supplierRecords.map(supplier=>(
+                            <tr key={supplier.supplierId}>
+                                <td>{supplier.supplierCode}</td>
+                                <td>{supplier.supplierName}</td>
+                                <td>{supplier.address}</td>
+                                <td>{supplier.mobileNumber}</td>
+                                <td>{supplier.email}</td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
             </div>
             <div id={"add-product-container"}>
                 <div>
-                    <h2> Add Supplier Detail</h2>
+                    <h2> Add Supplier </h2>
                 </div>
-                <form>
+                <form onSubmit={this.handleSubmit}>
                     <div className={"add-product-input"}>
                         <div className={"add-product-details"}>
-                            <label htmlFor={"productName"}> Supplier Name:</label>
-                            <input type={"text"} name={"productName"} id={"productName"}/>
+                            <label htmlFor={"supplierName"}> Supplier Name:</label>
+                            <input type={"text"} name={"supplierName"} id={"supplierName"} placeholder="Enter Supplier Name" onChange={this.handleChange} required/>
                         </div>
                         <div className={"add-product-details"}>
                             <label htmlFor={"address"}>Address: </label>
-                            <input type={"text"} id={"address"} className={"address"}/>
+                            <input type={"text"} id={"address"} name={"address"} placeholder="Enter Address" onChange={this.handleChange} required/>
                         </div>
                         <div className={"add-product-details"}>
-                            <label htmlFor={"contact-number"}>Contact Number: </label>
-                            <input type={"text"} id={"contact-number"} className={"contact-number"}/>
+                            <label htmlFor={"mobileNumber"}>Mobile Number: </label>
+                            <input type={"text"} id={"mobileNumber"} name={"mobileNumber"} placeholder="Enter Mobile Number" onChange={this.handleChange} required/>
                         </div>
                         <div className={"add-product-details"}>
-                            <label htmlFor={"debit-amount"}>Debit Amount: </label>
-                            <input type={"text"} id={"debit-amount"} className={"debit-amount"}/>
+                            <label htmlFor={"quantity"}>Email : </label>
+                            <input type={"text"} id={"email"} name={"email"} placeholder="Enter Email" onChange={this.handleChange} required/>
                         </div>
-                        <div className={"add-product-details"}>
-                            <label htmlFor={"credit-amount"}>Credit Amount: </label>
-                            <input type={"text"} id={"credit-amount"} className={"credit-amount"}/>
-                        </div>
-
+                       
                         <div id={"add-product-login"}>
                             <div id={"add-product-login-button"}>
                                 <button name={"add-product"}>Add Supplier</button>
