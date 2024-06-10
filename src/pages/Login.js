@@ -9,7 +9,8 @@ class Login extends Component {
         this.state = {
             username: '',
             password: '',
-            message: ''
+            message: '',
+            loginResponse:null
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -21,40 +22,43 @@ class Login extends Component {
             [name]: value,
         });
     }
-
+   
     async handleSubmit(event) {
         event.preventDefault();
         console.log('Enter into handleSubmit function ' + this.state.username);
         const {username, password} = this.state;
         const loginData = {username, password};
-        try {
-            const response = await axios.post('http://localhost:8080/login', loginData);
-            if (response.status === 200) {
-                alert(response.data);
-                this.props.navigate('/menu');
-            } else if (response.status === 204) {
-                this.setState({message: 'Password does not match'});
-            }
-
-        } catch (error) {
-            if (error.response) {
-                // The request was made and the server responded with a status code
-                const {status} = error.response;
-                if (status === 401) {
-                    this.setState({message: 'Invalid username & password'});
-                } else if (status === 400) {
-                    this.setState({message: 'Username not found'});
-                } else {
-                    this.setState({message: 'An error occurred'});
+            await axios.post('http://localhost:8080/login', loginData).then(response=>{
+                if (response.status === 200) {
+                    console.log(response.data);
+                    localStorage.setItem('accessToken', response.data.token);
+                    localStorage.setItem('username', response.data.username);
+                    alert('Successfully Login');
+                    this.props.navigate('/home');
+                   
+                } else if (response.status === 204) {
+                    this.setState({message: 'Password does not match'});
                 }
-            } else if (error.request) {
-                // The request was made but no response was received
-                this.setState({message: 'No response from server'});
-            } else {
-                // Something happened in setting up the request that triggered an Error
-                this.setState({message: 'Error: ' + error.message});
-            }
-        }
+            }   
+            ).catch (error=>{
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    const {status} = error.response;
+                    if (status === 401) {
+                        this.setState({message: 'Invalid username & password'});
+                    } else if (status === 400) {
+                        this.setState({message: 'Username not found'});
+                    } else {
+                        this.setState({message: 'An error occurred'});
+                    }
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    this.setState({message: 'No response from server'});
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    this.setState({message: 'Error: ' + error.message});
+                }
+            });
     }
 
     render() {
@@ -105,4 +109,5 @@ const withNavigation = (Component) => {
         return <Component {...props} navigate={navigate}/>;
     };
 };
+
 export default withNavigation(Login);

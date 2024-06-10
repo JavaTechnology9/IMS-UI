@@ -1,8 +1,23 @@
 import {Component} from "react";
 import HeaderWithMenu from "./HeaderWithMenu";
 import '../css/TableComponent.css'
+import axios from "axios";
 
 class UserLogs extends Component{
+    constructor(props){
+        super(props);
+        this.state={
+            userData:[]
+        }
+    }
+
+    async componentDidMount(){
+        const response = await axios.get('http://localhost:8080/loadAllUsers');
+        console.log(response.data);
+        this.setState(()=>({
+            userData:response.data
+        }))
+    }
     render() {
         return(<>
             <HeaderWithMenu/>
@@ -12,35 +27,20 @@ class UserLogs extends Component{
                 <table className="styled-table">
                     <thead>
                     <tr>
-                        <th>Name</th>
                         <th>USERNAME</th>
                         <th>IN_TIME</th>
                         <th>OUT_TIME</th>
-                        <th>LOCATION</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>John Doe</td>
-                        <td>30</td>
-                        <td>123 Main St</td>
-                        <td>123 Main St</td>
-                        <td>123 Main St</td>
-                    </tr>
-                    <tr>
-                        <td>Jane Smith</td>
-                        <td>25</td>
-                        <td>456 Elm St</td>
-                        <td>25</td>
-                        <td>Jane Smith</td>
-                    </tr>
-                    <tr>
-                        <td>Emily Johnson</td>
-                        <td>35</td>
-                        <td>789 Oak St</td>
-                        <td>35</td>
-                        <td>Emily Johnson</td>
-                    </tr>
+                    {this.state.userData.map(user => (
+                            <tr key={user.id}>
+                                <td>{user.username}</td>
+                                <td>{user.loginInTime}</td>
+                                <td>{user.loginOutTime}</td>
+                                
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

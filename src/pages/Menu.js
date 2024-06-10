@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import '../css/Menu.css'
-import {Link} from "react-router-dom";
+
 class Menu extends Component{
     render() {
         return(
@@ -16,7 +16,7 @@ class Menu extends Component{
                 <li><a href="/purchase">Purchase</a></li>
                 <li><a href="/users">Users</a></li>
                 <li><a href="/userLogs">UserLogs</a></li>
-                <Link to={"/registration"}><button name={"REGISTRATION"}>REGISTRATION</button></Link>
+                
             </ul>
         </div>
             </>);

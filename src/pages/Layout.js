@@ -13,6 +13,8 @@ import Customers from "./Customers";
 import Menu from "./Menu";
 import HeaderWithMenu from "./HeaderWithMenu";
 import Home from "./Home";
+import Logout from './Logout';
+import HeaderWithMenu2 from "./HeaderWithMenu2";
 
 class Layout extends Component{
     render() {
@@ -29,10 +31,11 @@ class Layout extends Component{
                     <Route path={"/suppliers"} element={<Suppliers/>}/>
                     <Route path={"/currentStock"} element={<CurrentStock/>}/>
                     <Route path={"/customers"} element={<Customers/>}/>
-                    <Route path={"/menu"} element={<HeaderWithMenu/>}/>
-                    <Route path={"/userLogs"} element={<HeaderWithMenu/>}/>
+                    <Route path={"/menu"} element={<HeaderWithMenu2/>}/>
+                    <Route path={"/userLogs"} element={<UserLogs/>}/>
                     <Route path={"/home"} element={<Home/>}/>
                     <Route path={"/login"} element={<Login/>}/>
+                    <Route path={"/logout"} element={<Logout/>}/>
                 </Routes>
             </div>
         </BrowserRouter>);

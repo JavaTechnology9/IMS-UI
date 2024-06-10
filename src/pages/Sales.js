@@ -1,23 +1,26 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import HeaderWithMenu from "./HeaderWithMenu";
 import "../css/customer.css"
 import axios from "axios";
 
 class Sales extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
-        this.state={
-            selectedValue:'',
-            brand:'',
-            location:'',
-            phone:'',
-            email:'',
-            message:'',
-            products:[],
+        this.state = {
+            productName: '',
+            sellPrice: '',
+            soldBy: '',
+            quantity: '',
+            message: '',
+            price: '',
+            products: [],
+            customers:[],
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSelectChange = this.handleSelectChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSalePriceChange = this.handleSalePriceChange.bind(this);
+        this.handleCustomerChange = this.handleCustomerChange.bind(this);
     }
     handleChange(event) {
         const { name, value } = event.target;
@@ -25,65 +28,70 @@ class Sales extends Component {
             [name]: value,
         });
     }
-    handleSelectChange(event){
-        this.findRecord();
+    handleSelectChange(event) {
         this.setState({
-            selectedValue: event.target.value
+            productName: event.target.value
         })
-        
     }
-    findRecord = () => {
-        console.log("findRecord is calling")
-        // Find the record you want based on multiple conditions
-        const foundRecord = this.state.products.find(product => product.productName==this.state.selectedValue); // Adjust conditions as needed
-        console.log(foundRecord)
-        // If the record is found, set its value as the selected option
-        if (foundRecord) {
-          this.setState({ brand: foundRecord.productBrand });
-        }
-        console.log(this.state.brand);
+    handleSalePriceChange(event){
+        this.setState({
+            sellPrice: event.target.value
+        })
     }
-   
-    
-    //   shouldComponentUpdate() {
-        
-    //     return true;
-    //   }
-    
-    async componentDidMount(){
+    handleCustomerChange(event){
+        this.setState({
+            soldBy: event.target.value
+        })
+    }
+
+    findRecord() {
+           return  this.state.products.filter(product=> product.productName===this.state.productName).map(product=>(
+                <option key={product.sellingPrice}>
+                    {product.sellingPrice}
+
+                </option>)
+            );
+    }
+
+    async componentDidMount() {
         const response = await axios.get('http://localhost:8080/products/getAllProducts');
-        this.setState(()=>({
-            products:response.data
+        this.setState(() => ({
+            products: response.data
         }))
-        
+
+        const customerResponse = await axios.get('http://localhost:8080/customer/getAllCustomers');
+        this.setState(() => ({
+            customers: customerResponse.data
+        }))
+
     }
-    
+
     async handleSubmit(event) {
         event.preventDefault();
-        const { customerName, location,phone,email} = this.state;
-        const customerData = { customerName, location,phone,email};
+        const { productName, sellPrice, quantity, soldBy } = this.state;
+        const salesData = { productName, sellPrice, quantity, soldBy };
         try {
-           // console.log(customerData);
-            const response = await axios.post('http://localhost:8080/customer/addCustomer',customerData);
+            console.log(salesData);
+            const response = await axios.post('http://localhost:8080/sales/addSale', salesData);
             // if (response.status === 200) {
             //     this.setState({ message: response.data });
             // }
-            if (response.status===200) {
+            if (response.status === 200) {
                 alert(response.data);
-                
+
                 //this.props.navigate('/login');
             }
-        }catch (error){
+        } catch (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
-                const { status,data } = error.response;
+                const { status, data } = error.response;
                 if (status === 401) {
                     this.setState({ message: data });
                 } else if (status === 400) {
                     this.setState({ message: data });
-                }  else if (status === 500) {
+                } else if (status === 500) {
                     this.setState({ message: data });
-                }else {
+                } else {
                     this.setState({ message: 'An error occurred' });
                 }
             } else if (error.request) {
@@ -97,26 +105,26 @@ class Sales extends Component {
 
     }
     render() {
-       
+
         return (<>
-            <HeaderWithMenu/>
+            <HeaderWithMenu />
             <div id={"product-container"}>
                 <div><h1>Customer Details</h1></div>
                 <div className="table-container">
                     <table className="styled-table">
                         <thead>
-                        <tr>
-                            <th>CUSTOMER_ID</th>
-                            <th>CUSTOMER_NAME</th>
-                            <th>CUSTOMER_CODE</th>
-                            <th>LOCATION</th>
-                            <th>PHONE</th>
-                            <th>Email</th>
-                        </tr>
-                        
+                            <tr>
+                                <th>CUSTOMER_ID</th>
+                                <th>CUSTOMER_NAME</th>
+                                <th>CUSTOMER_CODE</th>
+                                <th>LOCATION</th>
+                                <th>PHONE</th>
+                                <th>Email</th>
+                            </tr>
+
                         </thead>
                         <tbody>
-                        {/* {this.state.customerData.map(customer => (
+                            {/* {this.state.customerData.map(customer => (
                             <tr key={customer.customerId}>
                                 <td>{customer.customerId}</td>
                                 <td>{customer.customerName}</td>
@@ -126,7 +134,7 @@ class Sales extends Component {
                                 <td>{customer.email}</td>
                             </tr>
                         ))} */}
-                        
+
                         </tbody>
                     </table>
                 </div>
@@ -138,43 +146,48 @@ class Sales extends Component {
                 </div>
                 <form onSubmit={this.handleSubmit}>
                     <div className={"add-product-input"}>
-                    <div className={"add-product-details"}>
-                        <label htmlFor={"customerName"}> Product Name:</label>
-                           <select onChange={this.handleSelectChange}>
-                           {this.state.products.map(product => (
-                            <option key={product.id} value={product.productName}>
-                               {product.productName}
-                                
-                            </option>
-                        ))}
-                            </select> 
-                    </div>
-                    <div className={"add-product-details"}>
-                        <label htmlFor={"location"}>Selling Price: </label>
-                        <select onChange={this.handleSelectChange}>
-                           {
-                            <option key={this.state.brand} value={this.state.brand}>
-                               {this.state.brand}
-                                
-                            </option>
-    }
-                        
+                        <div className={"add-product-details"}>
+                            <label htmlFor={"customerName"}> Product Name:</label>
+                            <select onChange={this.handleSelectChange}>
+                                <option>Select Product Name</option>
+                                {this.state.products.map(product => (
+                                    <option key={product.id} value={product.productName}>
+                                        {product.productName}
+
+                                    </option>
+                                ))}
                             </select>
-                    </div>
-                    <div className={"add-product-details"}>
-                        <label htmlFor={"phone"}>Phone NO: </label>
-                        <input type={"text"} id={"phone"} name={"phone"}  placeholder="Enter Phone No" onChange={this.handleChange} required />
-                    </div>
-                    <div className={"add-product-details"}>
-                        <label htmlFor={"email"}>Email: </label>
-                        <input type={"text"} id={"email"} name={"email"}  placeholder="Enter Email" onChange={this.handleChange} required />
-                    </div>
-                    
-                    <div id={"add-product-login"}>
-                        <div id={"add-product-login-button"}>
-                            <button name={"add-product"}>Add Customer</button>
                         </div>
-                    </div>
+                        <div className={"add-product-details"}>
+                            <label htmlFor={"location"}>Selling Price: </label>
+                            <select onChange={this.handleSalePriceChange}>
+                                <option>Select Price</option>
+                                {this.state.productName && this.findRecord() }
+
+                            </select>
+                        </div>
+                        <div className={"add-product-details"}>
+                            <label htmlFor={"phone"}>Quantity: </label>
+                            <input type={"text"} id={"quantity"} name={"quantity"}  onChange={this.handleChange} required />
+                        </div>
+                        <div className={"add-product-details"}>
+                            <label htmlFor={"email"}>SoldBy: </label>
+                            <select onChange={this.handleCustomerChange}>
+                                <option>Select Customer Name</option>
+                                {this.state.customers.map(customer => (
+                                    <option key={customer.customerId} value={customer.customerName}>
+                                        {customer.customerName}
+
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div id={"add-product-login"}>
+                            <div id={"add-product-login-button"}>
+                                <button name={"add-product"}>Add Customer</button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
