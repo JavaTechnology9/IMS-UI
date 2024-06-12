@@ -40,13 +40,10 @@ class Products extends Component {
         try {
             console.log(productData);
             const response = await axios.post('http://localhost:8080/products/addProduct',productData);
-            // if (response.status === 200) {
-            //     this.setState({ message: response.data });
-            // }
+        
             if (response.status===200) {
                 alert(response.data);
                 
-                //this.props.navigate('/login');
             }
         }catch (error){
             if (error.response) {
@@ -85,7 +82,6 @@ class Products extends Component {
                             <th>COST_PRICE</th>
                             <th>SELL_PRICE</th>
                             <th>BRAND</th>
-                            <th>QUANTITY</th>
                         </tr>
                         
                         </thead>
@@ -97,7 +93,6 @@ class Products extends Component {
                                 <td>{product.costPrice}</td>
                                 <td>{product.sellingPrice}</td>
                                 <td>{product.productBrand}</td>
-                                <td>{product.quantity}</td>
                             </tr>
                         ))}
                         
@@ -105,7 +100,7 @@ class Products extends Component {
                     </table>
                 </div>
             </div>
-            <div id={"add-product-container"}>
+            {/* <div id={"add-product-container"}>
                 <div>
                     <h4>{this.state.message}</h4>
                     <h2> Add Product</h2>
@@ -140,7 +135,7 @@ class Products extends Component {
                     </div>
                     </div>
                 </form>
-            </div>
+            </div> */}
         </>)
     }
 }

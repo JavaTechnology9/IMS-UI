@@ -1,18 +1,18 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import HeaderWithMenu from "./HeaderWithMenu";
 import "../css/supplier.css";
 import axios from "axios";
 
-class Suppliers extends Component{
-    constructor(props){
+class Suppliers extends Component {
+    constructor(props) {
         super(props);
-        this.state={
-            supplierName:'',
-            mobileNumber:'',
-            address:'',
-            email:'',
-            message:'',
-            supplierRecords:[],
+        this.state = {
+            supplierName: '',
+            mobileNumber: '',
+            address: '',
+            email: '',
+            message: '',
+            supplierRecords: [],
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,39 +25,36 @@ class Suppliers extends Component{
             [name]: value,
         });
     }
-    async componentDidMount(){
+    async componentDidMount() {
         const response = await axios.get('http://localhost:8080/supplier/loadSuppliers');
         console.log(response.data);
-        this.setState(()=>({
-            supplierRecords:response.data
+        this.setState(() => ({
+            supplierRecords: response.data
         }))
     }
     async handleSubmit(event) {
         event.preventDefault();
-        const { supplierName,mobileNumber,address,email} = this.state;
-        const supplierData = { supplierName,mobileNumber,address,email};
+        const { supplierName, mobileNumber, address, email } = this.state;
+        const supplierData = { supplierName, mobileNumber, address, email };
         try {
             console.log(supplierData);
-            const response = await axios.post('http://localhost:8080/supplier/addSupplier',supplierData);
-            // if (response.status === 200) {
-            //     this.setState({ message: response.data });
-            // }
-            if (response.status===200) {
+            const response = await axios.post('http://localhost:8080/supplier/addSupplier', supplierData);
+
+            if (response.status === 200) {
                 alert(response.data);
-                
-                //this.props.navigate('/login');
+                window.location.reload();
             }
-        }catch (error){
+        } catch (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
-                const { status,data } = error.response;
+                const { status, data } = error.response;
                 if (status === 401) {
                     this.setState({ message: data });
                 } else if (status === 400) {
                     this.setState({ message: data });
-                }  else if (status === 500) {
+                } else if (status === 500) {
                     this.setState({ message: data });
-                }else {
+                } else {
                     this.setState({ message: 'An error occurred' });
                 }
             } else if (error.request) {
@@ -71,31 +68,31 @@ class Suppliers extends Component{
 
     }
     render() {
-        return(<>
-            <HeaderWithMenu/>
+        return (<>
+            <HeaderWithMenu />
             <div id={"product-container"}>
                 <div><h1>Suppliers Details </h1></div>
                 <div className="table-container">
                     <table className="styled-table">
                         <thead>
-                        <tr>
-                            <th>SUPPLIER_CODE</th>
-                            <th>SUPPLIER_NAME</th>
-                            <th>ADDRESS</th>
-                            <th>MOBILE_NUMBER</th>
-                            <th>EMAIL</th>
-                        </tr>
+                            <tr>
+                                <th>SUPPLIER_CODE</th>
+                                <th>SUPPLIER_NAME</th>
+                                <th>ADDRESS</th>
+                                <th>MOBILE_NUMBER</th>
+                                <th>EMAIL</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {this.state.supplierRecords.map(supplier=>(
-                            <tr key={supplier.supplierId}>
-                                <td>{supplier.supplierCode}</td>
-                                <td>{supplier.supplierName}</td>
-                                <td>{supplier.address}</td>
-                                <td>{supplier.mobileNumber}</td>
-                                <td>{supplier.email}</td>
-                            </tr>
-                        ))}
+                            {this.state.supplierRecords.map(supplier => (
+                                <tr key={supplier.supplierId}>
+                                    <td>{supplier.supplierCode}</td>
+                                    <td>{supplier.supplierName}</td>
+                                    <td>{supplier.address}</td>
+                                    <td>{supplier.mobileNumber}</td>
+                                    <td>{supplier.email}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -108,21 +105,21 @@ class Suppliers extends Component{
                     <div className={"add-product-input"}>
                         <div className={"add-product-details"}>
                             <label htmlFor={"supplierName"}> Supplier Name:</label>
-                            <input type={"text"} name={"supplierName"} id={"supplierName"} placeholder="Enter Supplier Name" onChange={this.handleChange} required/>
+                            <input type={"text"} name={"supplierName"} id={"supplierName"} placeholder="Enter Supplier Name" onChange={this.handleChange} required />
                         </div>
                         <div className={"add-product-details"}>
                             <label htmlFor={"address"}>Address: </label>
-                            <input type={"text"} id={"address"} name={"address"} placeholder="Enter Address" onChange={this.handleChange} required/>
+                            <input type={"text"} id={"address"} name={"address"} placeholder="Enter Address" onChange={this.handleChange} required />
                         </div>
                         <div className={"add-product-details"}>
                             <label htmlFor={"mobileNumber"}>Mobile Number: </label>
-                            <input type={"text"} id={"mobileNumber"} name={"mobileNumber"} placeholder="Enter Mobile Number" onChange={this.handleChange} required/>
+                            <input type={"text"} id={"mobileNumber"} name={"mobileNumber"} placeholder="Enter Mobile Number" onChange={this.handleChange} required />
                         </div>
                         <div className={"add-product-details"}>
                             <label htmlFor={"quantity"}>Email : </label>
-                            <input type={"text"} id={"email"} name={"email"} placeholder="Enter Email" onChange={this.handleChange} required/>
+                            <input type={"text"} id={"email"} name={"email"} placeholder="Enter Email" onChange={this.handleChange} required />
                         </div>
-                       
+
                         <div id={"add-product-login"}>
                             <div id={"add-product-login-button"}>
                                 <button name={"add-product"}>Add Supplier</button>

@@ -1,7 +1,7 @@
 import React from "react";//{useState,useEffect,useContext}
 import {Link} from "react-router-dom";
 const Header2=({username})=>{
-return(<div class="topnav">
+return(<div className="topnav">
     {username ? (
 <div>
  <p>Welcome, {username}!</p>
@@ -14,7 +14,7 @@ return(<div class="topnav">
 )}
  {/* <a class="active" onClick={this.handleLogout}>Logout</a>
  <a href="#username">UserName</a> */}
- <div class="search-container">
+ <div className="search-container">
      <form action="/action_page.php">
          <input type="text" placeholder="Search.." name="search"/>
              <button type="submit">Search</button>

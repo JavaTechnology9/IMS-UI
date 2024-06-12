@@ -1,40 +1,49 @@
-import {Component} from "react";
+import { Component } from "react";
 import HeaderWithMenu from "./HeaderWithMenu";
+import axios from "axios";
+class CurrentStock extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            currentStock: []
+        }
 
-class CurrentStock extends Component{
+    }
+
+    async componentDidMount() {
+        const response = await axios.get('http://localhost:8080/currentStock/loadCurrentStock');
+        console.log(response.data);
+        this.setState(() => ({
+            currentStock: response.data
+        }))
+    }
+
     render() {
-        return(<>
-            <HeaderWithMenu/>
-            <div><h1>Current Stock</h1></div>
-            <div className="table-container">
-                <table className="styled-table">
-                    <thead>
-                    <tr>
-                        <th>PRODUCT_CODE</th>
-                        <th>PRODUCT_NAME</th>
-                        <th>QUANTITY</th>
-                        <th>SELL_PRICE</th>
-                        <th>COST_PRICE</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>John Doe</td>
-                        <td>30</td>
-                        <td>123 Main St</td>
-                    </tr>
-                    <tr>
-                        <td>Jane Smith</td>
-                        <td>25</td>
-                        <td>456 Elm St</td>
-                    </tr>
-                    <tr>
-                        <td>Emily Johnson</td>
-                        <td>35</td>
-                        <td>789 Oak St</td>
-                    </tr>
-                    </tbody>
-                </table>
+        return (<>
+            <HeaderWithMenu />
+            <div id={"product-container"}>
+                <div><h1>Current Stock</h1></div>
+                <div className="table-container">
+                    <table className="styled-table">
+                        <thead>
+                            <tr>
+                                <th>CURRENT_STOCK_ID</th>
+                                <th>PRODUCT_NAME</th>
+                                <th>QUANTITY</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.currentStock.map(stock => (
+                                <tr key={stock.currentStockId}>
+                                    <td>{stock.currentStockId}</td>
+                                    <td>{stock.products.productName}</td>
+                                    <td>{stock.quantity}</td>
+
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </>)
     }

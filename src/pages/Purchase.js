@@ -1,23 +1,23 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 import HeaderWithMenu from "./HeaderWithMenu";
 import axios from "axios";
-class Purchase extends Component{
-    constructor(props){
+class Purchase extends Component {
+    constructor(props) {
         super(props);
-        this.state={
-            supplierName:'',
-            productName:'',
-            quantity:'',
-            costPrice:'',
-            sellingPrice:'',
-            brand:'',
-            message:'',
-            purchaseRecords:[],
-            supplierRecords:[],
+        this.state = {
+            supplierName: '',
+            productName: '',
+            quantity: '',
+            costPrice: '',
+            sellingPrice: '',
+            brand: '',
+            message: '',
+            purchaseRecords: [],
+            supplierRecords: [],
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleSelectChange=this.handleSelectChange.bind(this);
+        this.handleSelectChange = this.handleSelectChange.bind(this);
     }
     handleChange(event) {
         const { name, value } = event.target;
@@ -27,51 +27,47 @@ class Purchase extends Component{
             [name]: value,
         });
     }
-    async componentDidMount(){
-        
+    async componentDidMount() {
+
         const purchaseResponse = await axios.get('http://localhost:8080/purchase/loadAllPurchase');
         console.log(purchaseResponse.data);
-        this.setState(()=>({
-            purchaseRecords:purchaseResponse.data
+        this.setState(() => ({
+            purchaseRecords: purchaseResponse.data
         }))
         const response = await axios.get('http://localhost:8080/supplier/loadSuppliers');
         console.log(response.data);
-        this.setState(()=>({
-            supplierRecords:response.data
+        this.setState(() => ({
+            supplierRecords: response.data
         }))
     }
-    handleSelectChange(event){
+    handleSelectChange(event) {
         this.setState({
             supplierName: event.target.value
         })
-        
+
     }
     async handleSubmit(event) {
         event.preventDefault();
-        const { supplierName,productName,quantity,costPrice,sellingPrice,brand} = this.state;
-        const purchaseData = { supplierName,productName,quantity,costPrice,sellingPrice,brand};
+        const { supplierName, productName, quantity, costPrice, sellingPrice, brand } = this.state;
+        const purchaseData = { supplierName, productName, quantity, costPrice, sellingPrice, brand };
         try {
             console.log(purchaseData);
-            const response = await axios.post('http://localhost:8080/purchase/addPurchase',purchaseData);
-            // if (response.status === 200) {
-            //     this.setState({ message: response.data });
-            // }
-            if (response.status===200) {
+            const response = await axios.post('http://localhost:8080/purchase/addPurchase', purchaseData);
+            if (response.status === 200) {
                 alert(response.data);
-                
-                //this.props.navigate('/login');
+                window.location.reload();
             }
-        }catch (error){
+        } catch (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
-                const { status,data } = error.response;
+                const { status, data } = error.response;
                 if (status === 401) {
                     this.setState({ message: data });
                 } else if (status === 400) {
                     this.setState({ message: data });
-                }  else if (status === 500) {
+                } else if (status === 500) {
                     this.setState({ message: data });
-                }else {
+                } else {
                     this.setState({ message: 'An error occurred' });
                 }
             } else if (error.request) {
@@ -85,31 +81,31 @@ class Purchase extends Component{
 
     }
     render() {
-        return(<>
-            <HeaderWithMenu/>
+        return (<>
+            <HeaderWithMenu />
             <div id={"product-container"}>
                 <div><h1>Purchase Details</h1></div>
                 <div className="table-container">
                     <table className="styled-table">
                         <thead>
-                        <tr>
-                            <th>PURCHASE_ID</th>
-                            <th>PRODUCT_CODE</th>
-                            <th>PRODUCT_NAME</th>
-                            <th>QUANTITY</th>
-                            <th>TOTAL_COST</th>
-                        </tr>
+                            <tr>
+                                <th>PURCHASE_ID</th>
+                                <th>PRODUCT_CODE</th>
+                                <th>PRODUCT_NAME</th>
+                                <th>QUANTITY</th>
+                                <th>TOTAL_COST</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {this.state.purchaseRecords && this.state.purchaseRecords.map(purchase=>(
-                            <tr key={purchase.purchaseId}>
-                                <td>{purchase.purchaseId}</td>
-                                <td>{purchase.productCode}</td>
-                                <td>{purchase.productName}</td>
-                                <td>{purchase.quantity}</td>
-                                <td>{purchase.totalCost}</td>
-                            </tr>
-                        ))}
+                            {this.state.purchaseRecords && this.state.purchaseRecords.map(purchase => (
+                                <tr key={purchase.purchaseId}>
+                                    <td>{purchase.purchaseId}</td>
+                                    <td>{purchase.productCode}</td>
+                                    <td>{purchase.productName}</td>
+                                    <td>{purchase.quantity}</td>
+                                    <td>{purchase.totalCost}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -120,41 +116,41 @@ class Purchase extends Component{
                 </div>
                 <form onSubmit={this.handleSubmit}>
                     <div className={"add-product-input"}>
-                    <div className={"add-product-details"}>
+                        <div className={"add-product-details"}>
                             <label htmlFor={"product-brand"}>Select Supplier : </label>
                             <select onChange={this.handleSelectChange}>
                                 <option>Select Supplier</option>
-                           {this.state.supplierRecords.map(supplier => (
-                            <option key={supplier.supplierId} value={supplier.supplierName}>
-                               {supplier.supplierName}
-                                
-                            </option>
-                        ))}
+                                {this.state.supplierRecords.map(supplier => (
+                                    <option key={supplier.supplierId} value={supplier.supplierName}>
+                                        {supplier.supplierName}
+
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className={"add-product-details"}>
                             <label htmlFor={"productName"}> Product Name:</label>
-                            <input type={"text"} name={"productName"} id={"productName"} onChange={this.handleChange} required/>
+                            <input type={"text"} name={"productName"} id={"productName"} onChange={this.handleChange} required />
                         </div>
                         <div className={"add-product-details"}>
                             <label htmlFor={"quantity"}>Quantity: </label>
-                            <input type={"text"} id={"quantity"} name={"quantity"} onChange={this.handleChange} required/>
+                            <input type={"text"} id={"quantity"} name={"quantity"} onChange={this.handleChange} required />
                         </div>
                         <div className={"add-product-details"}>
                             <label htmlFor={"costPrice"}>Cost Price: </label>
-                            <input type={"text"} id={"costPrice"} name={"costPrice"} onChange={this.handleChange} required/>
+                            <input type={"text"} id={"costPrice"} name={"costPrice"} onChange={this.handleChange} required />
                         </div>
 
                         <div className={"add-product-details"}>
                             <label htmlFor={"sellingPrice"}>Selling Price: </label>
-                            <input type={"text"} id={"sellingPrice"} name={"sellingPrice"} onChange={this.handleChange} required/>
+                            <input type={"text"} id={"sellingPrice"} name={"sellingPrice"} onChange={this.handleChange} required />
                         </div>
 
                         <div className={"add-product-details"}>
                             <label htmlFor={"brand"}>Brand: </label>
-                            <input type={"text"} id={"brand"} name={"brand"} onChange={this.handleChange} required/>
+                            <input type={"text"} id={"brand"} name={"brand"} onChange={this.handleChange} required />
                         </div>
-                        
+
                         <div id={"add-product-login"}>
                             <div id={"add-product-login-button"}>
                                 <button name={"add-product"}>Add Purchase</button>

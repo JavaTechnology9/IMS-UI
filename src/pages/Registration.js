@@ -1,14 +1,16 @@
-import React, {Component} from "react";
-import {Link, useNavigate} from "react-router-dom";
+import React, { Component } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-class Registration extends Component{
+import '../css/registration.css';
+class Registration extends Component {
     constructor(props) {
         super(props);
-        this.state={
-            username:'',
-            password:'',
-            mobileNo:'',
-            message:''
+        this.state = {
+            username: '',
+            password: '',
+            mobileNo: '',
+            fullName: '',
+            message: ''
         }
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -22,29 +24,27 @@ class Registration extends Component{
     }
     async handleSubmit(event) {
         event.preventDefault();
-        const { username, password,mobileNo } = this.state;
-        const registrationData = { username, password,mobileNo };
+        const { username, password, mobileNo, fullName } = this.state;
+        const registrationData = { username, password, mobileNo, fullName };
         try {
             console.log(registrationData);
-            const response = await axios.post('http://localhost:8080/registration',registrationData);
-            // if (response.status === 200) {
-            //     this.setState({ message: response.data });
-            // }
-            if (response.status===200) {
+            const response = await axios.post('http://localhost:8080/registration', registrationData);
+            
+            if (response.status === 200) {
                 alert(response.data);
                 this.props.navigate('/login');
             }
-        }catch (error){
+        } catch (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code
-                const { status,data } = error.response;
+                const { status, data } = error.response;
                 if (status === 401) {
                     this.setState({ message: data });
                 } else if (status === 400) {
                     this.setState({ message: data });
-                }  else if (status === 500) {
+                } else if (status === 500) {
                     this.setState({ message: data });
-                }else {
+                } else {
                     this.setState({ message: 'An error occurred' });
                 }
             } else if (error.request) {
@@ -58,7 +58,7 @@ class Registration extends Component{
 
     }
     render() {
-        return(<div id={"ims-login"}>
+        return (<div id={"ims-login"}>
             <div id={"form-login"}>
                 <div>
                     <h4>{this.state.message}</h4>
@@ -67,16 +67,20 @@ class Registration extends Component{
                 <form onSubmit={this.handleSubmit}>
                     <div className="container">
                         <div className={"user-info"}>
+                            <label htmlFor={"fullName"}>Full Name: </label>
+                            <input type={"text"} name={"fullName"} id={"fullName"} placeholder="Enter Full Name" onChange={this.handleChange} required />
+                        </div>
+                        <div className={"user-info"}>
                             <label htmlFor={"username"}>Username: </label>
-                            <input type={"text"} name={"username"} id={"username"} placeholder="Enter Email" onChange={this.handleChange} required/>
+                            <input type={"text"} name={"username"} id={"username"} placeholder="Enter Email" onChange={this.handleChange} required />
                         </div>
                         <div className={"user-info"}>
                             <label htmlFor={"password"}>Password: </label>
-                            <input type={"password"} name={"password"} id={"password"} placeholder="Enter Password" onChange={this.handleChange} required/>
+                            <input type={"password"} name={"password"} id={"password"} placeholder="Enter Password" onChange={this.handleChange} required />
                         </div>
                         <div className={"user-info"}>
                             <label htmlFor={"mobileNo"}>MobileNo: </label>
-                            <input type={"text"} name={"mobileNo"} id={"mobileNo"} placeholder="Enter Mobile No" onChange={this.handleChange} required/>
+                            <input type={"text"} name={"mobileNo"} id={"mobileNo"} placeholder="Enter Mobile No" onChange={this.handleChange} required />
                         </div>
 
                         <div id={"login"}>
